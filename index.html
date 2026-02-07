@@ -1,0 +1,2291 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Platform</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 25px 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .username {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 30px;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            height: fit-content;
+        }
+
+        .content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            min-height: 500px;
+        }
+
+        .tabs {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            border: none;
+            background: #f5f5f5;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s ease;
+            text-align: left;
+            width: 100%;
+        }
+
+        .tab-btn:hover {
+            background: #e9ecef;
+        }
+
+        .tab-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .content-tab {
+            display: none;
+        }
+
+        .content-tab.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+
+        .post {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+            position: relative;
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .post-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .post-author {
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .post-author:hover {
+            text-decoration: underline;
+        }
+
+        .post-content {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            white-space: pre-wrap;
+        }
+
+        .post-preview-comment {
+            background: #e9ecef;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 3px solid #28a745;
+            font-size: 14px;
+        }
+
+        .post-preview-comment-author {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+
+        .post-preview-comment-text {
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .post-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .post-date {
+            color: #888;
+            font-size: 14px;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .post-admin-actions {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .like-btn {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 18px;
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .like-btn:hover {
+            background: rgba(220, 53, 69, 0.1);
+        }
+
+        .like-btn.liked {
+            color: #dc3545;
+        }
+
+        .comment-btn {
+            background: none;
+            border: none;
+            color: #28a745;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .comment-btn:hover {
+            background: rgba(40, 167, 69, 0.1);
+        }
+
+        .comment-count {
+            font-size: 14px;
+            color: #6c757d;
+            margin-left: 5px;
+        }
+
+        .comments-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f1f3f4;
+            border-radius: 8px;
+        }
+
+        .comment {
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 3px solid #28a745;
+            position: relative;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: #667eea;
+            cursor: pointer;
+        }
+
+        .comment-author:hover {
+            text-decoration: underline;
+        }
+
+        .comment-text {
+            color: #555;
+            margin: 5px 0;
+            white-space: pre-wrap;
+        }
+
+        .comment-date {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .comment-actions {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .profile-info {
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .profile-info p {
+            margin: 10px 0;
+            color: #555;
+        }
+
+        .profile-info strong {
+            color: #333;
+        }
+
+        .user-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #28a745;
+        }
+
+        .user-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .user-card-name {
+            font-weight: 700;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .user-card-name:hover {
+            text-decoration: underline;
+        }
+
+        .user-card-date {
+            color: #888;
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #667eea;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .posts-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .posts-header h2 {
+            color: #333;
+        }
+
+        .content-header {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .content-header h2 {
+            color: #333;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .user-info {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .post-admin-actions {
+                position: static;
+                margin-top: 10px;
+                justify-content: flex-end;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <h1><i class="fas fa-blog"></i> Blog Platform</h1>
+                <button class="btn btn-warning" id="apiConfigBtn" style="font-size: 14px; padding: 8px 12px;">
+                    <i class="fas fa-server"></i> API
+                </button>
+            </div>
+            <div class="user-info" id="userInfo">
+                <div id="authButtons">
+                    <button class="btn btn-primary" onclick="showTab('login')" style="width: auto;">
+                        <i class="fas fa-sign-in-alt"></i> Войти
+                    </button>
+                    <button class="btn btn-secondary" onclick="showTab('register')" style="width: auto; margin-left: 10px;">
+                        <i class="fas fa-user-plus"></i> Регистрация
+                    </button>
+                </div>
+                <div id="userProfile" class="hidden">
+                    <span class="username" id="currentUsername"></span>
+                    <button class="btn btn-danger" onclick="logout()" style="width: auto;">
+                        <i class="fas fa-sign-out-alt"></i> Выйти
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="showTab('posts')">
+                        <i class="fas fa-newspaper"></i> Все посты
+                    </button>
+                    <button class="tab-btn" onclick="showTab('create')" id="createTab">
+                        <i class="fas fa-edit"></i> Создать пост
+                    </button>
+                    <button class="tab-btn" onclick="showTab('users')" id="usersTab">
+                        <i class="fas fa-users"></i> Все пользователи
+                    </button>
+                    <button class="tab-btn" onclick="showTab('profile')" id="profileTab">
+                        <i class="fas fa-user"></i> Мой профиль
+                    </button>
+                </div>
+
+                <div class="search-box hidden" id="searchBox">
+                    <input type="text" id="searchPosts" placeholder="Поиск постов..." oninput="searchPosts()">
+                </div>
+
+                <!-- Секция авторизации (только для неавторизованных) -->
+                <div id="authSection">
+                    <!-- Авторизация -->
+                    <div id="loginTabContent">
+                        <h2 style="margin-bottom: 20px; color: #333;">Вход</h2>
+                        <div class="form-group">
+                            <label for="loginUsername">Имя пользователя</label>
+                            <input type="text" id="loginUsername" placeholder="Введите имя">
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Пароль</label>
+                            <input type="password" id="loginPassword" placeholder="Введите пароль">
+                        </div>
+                        <button class="btn btn-primary" onclick="login()">
+                            <i class="fas fa-sign-in-alt"></i> Войти
+                        </button>
+                        <p style="margin-top: 15px; text-align: center; color: #666;">
+                            Нет аккаунта? <a href="#" onclick="showTab('register')" style="color: #667eea;">Зарегистрируйтесь</a>
+                        </p>
+                    </div>
+
+                    <!-- Регистрация -->
+                    <div id="registerTabContent" style="display: none;">
+                        <h2 style="margin-bottom: 20px; color: #333;">Регистрация</h2>
+                        <div class="form-group">
+                            <label for="registerUsername">Имя пользователя</label>
+                            <input type="text" id="registerUsername" placeholder="Придумайте имя">
+                        </div>
+                        <div class="form-group">
+                            <label for="registerPassword">Пароль</label>
+                            <input type="password" id="registerPassword" placeholder="Придумайте пароль">
+                        </div>
+                        <div class="form-group">
+                            <label for="registerConfirm">Подтвердите пароль</label>
+                            <input type="password" id="registerConfirm" placeholder="Повторите пароль">
+                        </div>
+                        <button class="btn btn-success" onclick="register()">
+                            <i class="fas fa-user-plus"></i> Зарегистрироваться
+                        </button>
+                        <p style="margin-top: 15px; text-align: center; color: #666;">
+                            Уже есть аккаунт? <a href="#" onclick="showTab('login')" style="color: #667eea;">Войдите</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <div id="alertContainer"></div>
+                
+                <!-- Информация о подключении API -->
+                <div id="apiInfo" style="display: none; margin-bottom: 20px; padding: 10px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #ffc107;">
+                    <p style="margin: 0; font-size: 14px;">
+                        <i class="fas fa-info-circle"></i> 
+                        <strong>API:</strong> <span id="apiUrlDisplay"></span>
+                        <span id="apiStatus" style="margin-left: 10px;"></span>
+                    </p>
+                </div>
+                
+                <!-- Все посты -->
+                <div class="content-tab active" id="postsContent">
+                    <div class="posts-header">
+                        <h2><i class="fas fa-stream"></i> Все посты</h2>
+                        <span id="postsCount" style="font-size: 14px; color: #666;"></span>
+                    </div>
+                    <div id="postsList">
+                        <div class="loading">Загрузка постов...</div>
+                    </div>
+                </div>
+
+                <!-- Создание поста -->
+                <div class="content-tab" id="createContent">
+                    <div class="content-header">
+                        <h2><i class="fas fa-edit"></i> Создать новый пост</h2>
+                    </div>
+                    <div class="form-group">
+                        <label for="postTitle">Заголовок</label>
+                        <input type="text" id="postTitle" placeholder="Введите заголовок поста">
+                    </div>
+                    <div class="form-group">
+                        <label for="postContent">Содержание</label>
+                        <textarea id="postContent" rows="10" placeholder="Напишите содержимое вашего поста..."></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="createPost()">
+                        <i class="fas fa-paper-plane"></i> Опубликовать пост
+                    </button>
+                </div>
+
+                <!-- Все пользователи -->
+                <div class="content-tab" id="usersContent">
+                    <div class="content-header">
+                        <h2><i class="fas fa-users"></i> Все пользователи</h2>
+                    </div>
+                    <div id="usersList">
+                        <div class="loading">Загрузка пользователей...</div>
+                    </div>
+                </div>
+
+                <!-- Профиль пользователя -->
+                <div class="content-tab" id="userProfileContent">
+                    <div class="content-header">
+                        <h2><i class="fas fa-user"></i> Профиль пользователя</h2>
+                    </div>
+                    <div id="userProfileDetails">
+                        <div class="loading">Загрузка профиля...</div>
+                    </div>
+                </div>
+
+                <!-- Мой профиль -->
+                <div class="content-tab" id="profileContent">
+                    <div class="content-header">
+                        <h2><i class="fas fa-user"></i> Мой профиль</h2>
+                    </div>
+                    <div class="profile-info">
+                        <p><strong>Имя пользователя:</strong> <span id="profileUsername"></span></p>
+                        <p><strong>Роль:</strong> <span id="profileRole">Пользователь</span></p>
+                        <p><strong>Дата регистрации:</strong> <span id="profileCreated"></span></p>
+                        <p><strong>Описание:</strong> <span id="profileDescription">Не указано</span></p>
+                        <p><strong>Дата рождения:</strong> <span id="profileBirthDateDisplay">Не указана</span></p>
+                    </div>
+                    
+                    <h3 style="margin: 20px 0 15px; color: #333;">Редактировать профиль</h3>
+                    <div class="form-group">
+                        <label for="profileDescriptionInput">Описание</label>
+                        <textarea id="profileDescriptionInput" rows="3" placeholder="Расскажите немного о себе..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="profileBirthDate">Дата рождения</label>
+                        <input type="date" id="profileBirthDate">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" onclick="updateProfile()">
+                            <i class="fas fa-save"></i> Сохранить изменения
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteProfile()" style="margin-top: 10px;">
+                            <i class="fas fa-trash"></i> Удалить аккаунт
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Авторизация (в контенте для неавторизованных) -->
+                <div class="content-tab" id="loginContent">
+                    <div class="content-header">
+                        <h2><i class="fas fa-sign-in-alt"></i> Вход в систему</h2>
+                    </div>
+                    <div class="form-group">
+                        <label for="contentLoginUsername">Имя пользователя</label>
+                        <input type="text" id="contentLoginUsername" placeholder="Введите ваше имя пользователя">
+                    </div>
+                    <div class="form-group">
+                        <label for="contentLoginPassword">Пароль</label>
+                        <input type="password" id="contentLoginPassword" placeholder="Введите ваш пароль">
+                    </div>
+                    <button class="btn btn-primary" onclick="contentLogin()">
+                        <i class="fas fa-sign-in-alt"></i> Войти
+                    </button>
+                    <p style="margin-top: 15px; text-align: center; color: #666;">
+                        Нет аккаунта? <a href="#" onclick="showTab('register')" style="color: #667eea;">Зарегистрируйтесь</a>
+                    </p>
+                </div>
+
+                <!-- Регистрация (в контенте для неавторизованных) -->
+                <div class="content-tab" id="registerContent">
+                    <div class="content-header">
+                        <h2><i class="fas fa-user-plus"></i> Регистрация</h2>
+                    </div>
+                    <div class="form-group">
+                        <label for="contentRegisterUsername">Имя пользователя</label>
+                        <input type="text" id="contentRegisterUsername" placeholder="Придумайте имя пользователя">
+                    </div>
+                    <div class="form-group">
+                        <label for="contentRegisterPassword">Пароль</label>
+                        <input type="password" id="contentRegisterPassword" placeholder="Придумайте надежный пароль">
+                    </div>
+                    <div class="form-group">
+                        <label for="contentRegisterConfirm">Подтвердите пароль</label>
+                            <input type="password" id="contentRegisterConfirm" placeholder="Повторите пароль для подтверждения">
+                    </div>
+                    <button class="btn btn-success" onclick="contentRegister()">
+                        <i class="fas fa-user-plus"></i> Зарегистрироваться
+                    </button>
+                    <p style="margin-top: 15px; text-align: center; color: #666;">
+                        Уже есть аккаунт? <a href="#" onclick="showTab('login')" style="color: #667eea;">Войдите</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для редактирования поста -->
+    <div class="modal" id="editPostModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Редактировать пост</div>
+                <button class="close-btn" onclick="closeEditPostModal()">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="editPostTitle">Заголовок</label>
+                <input type="text" id="editPostTitle">
+            </div>
+            <div class="form-group">
+                <label for="editPostContent">Содержание</label>
+                <textarea id="editPostContent" rows="8"></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="updatePost()">
+                <i class="fas fa-save"></i> Сохранить изменения
+            </button>
+        </div>
+    </div>
+
+    <!-- Модальное окно для редактирования комментария -->
+    <div class="modal" id="editCommentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Редактировать комментарий</div>
+                <button class="close-btn" onclick="closeEditCommentModal()">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="editCommentText">Текст комментария</label>
+                <textarea id="editCommentText" rows="6"></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="updateComment()">
+                <i class="fas fa-save"></i> Сохранить изменения
+            </button>
+        </div>
+    </div>
+
+    <!-- Модальное окно для настройки API -->
+    <div class="modal" id="apiConfigModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fas fa-server"></i> Настройка API</div>
+                <button class="close-btn" onclick="closeApiConfigModal()">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="apiUrlInput">Адрес API сервера</label>
+                <input type="text" id="apiUrlInput" placeholder="http://localhost:8000">
+                <small style="color: #666; display: block; margin-top: 5px;">
+                    Примеры: 
+                    <ul style="margin: 5px 0 5px 20px;">
+                        <li>Для локального ПК: http://localhost:8000</li>
+                        <li>Для другого ПК в сети: http://192.168.1.100:8000</li>
+                        <li>Можно указать в URL: ?api=http://адрес:порт</li>
+                    </ul>
+                </small>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-primary" onclick="saveApiConfig()">
+                    <i class="fas fa-save"></i> Сохранить
+                </button>
+                <button class="btn btn-secondary" onclick="testApiConnection()" style="margin-left: 10px;">
+                    <i class="fas fa-bolt"></i> Проверить подключение
+                </button>
+                <button class="btn btn-warning" onclick="resetApiConfig()" style="margin-left: 10px;">
+                    <i class="fas fa-undo"></i> Сбросить
+                </button>
+            </div>
+            <div id="apiTestResult" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== КОНФИГУРАЦИЯ API ====================
+        
+        // Функция для определения базового URL API
+        function getApiBase() {
+            // 1. Проверяем параметр в URL (самый простой способ для второго ПК)
+            const urlParams = new URLSearchParams(window.location.search);
+            const apiParam = urlParams.get('api');
+            if (apiParam) {
+                console.log('Using API from URL parameter:', apiParam);
+                localStorage.setItem('blog_api_base', apiParam);
+                return apiParam;
+            }
+            
+            // 2. Проверяем сохраненный в localStorage адрес
+            const savedApi = localStorage.getItem('blog_api_base');
+            if (savedApi) {
+                console.log('Using saved API:', savedApi);
+                return savedApi;
+            }
+            
+            // 3. Автоматическое определение по текущему хосту
+            const hostname = window.location.hostname;
+            const protocol = window.location.protocol;
+            
+            // Если открыто с IP адреса (в локальной сети)
+            if (hostname.match(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/)) {
+                const apiUrl = `${protocol}//${hostname}:8000`;
+                console.log('Auto-detected API (IP address):', apiUrl);
+                return apiUrl;
+            }
+            
+            // Если localhost (разработка)
+            if (hostname === 'localhost' || hostname === '127.0.0.1') {
+                console.log('Auto-detected API (localhost): http://localhost:8000');
+                return 'http://localhost:8000';
+            }
+            
+            // По умолчанию
+            console.log('Using default API: http://localhost:8000');
+            return 'http://localhost:8000';
+        }
+        
+        // Динамический API_BASE
+        let API_BASE = getApiBase();
+        const TOKEN_KEY = 'blog_token';
+        const USERNAME_KEY = 'blog_username';
+        const USERID_KEY = 'blog_userid';
+        
+        // ==================== ИНИЦИАЛИЗАЦИЯ ====================
+        
+        // Состояние приложения
+        let currentUser = {
+            token: localStorage.getItem(TOKEN_KEY) || '',
+            username: localStorage.getItem(USERNAME_KEY) || '',
+            id: localStorage.getItem(USERID_KEY) || null,
+            role: null
+        };
+
+        // Текущие редактируемые элементы
+        let currentEditPostId = null;
+        let currentEditCommentId = null;
+        let currentPostIdForComment = null;
+
+        // Функция для парсинга JWT токена
+        function parseJwt(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                return JSON.parse(jsonPayload);
+            } catch (e) {
+                console.error('Error parsing token:', e);
+                return null;
+            }
+        }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Настраиваем кнопку API
+            document.getElementById('apiConfigBtn').onclick = openApiConfigModal;
+            
+            // Показываем информацию об API
+            showApiInfo();
+            
+            // Проверяем подключение к API
+            testApiConnectionOnStart();
+            
+            // Загружаем данные
+            checkAuth();
+            loadPosts();
+        });
+        
+        // ==================== ФУНКЦИИ ДЛЯ РАБОТЫ С API ====================
+        
+        // Показать информацию об API
+        function showApiInfo() {
+            const apiInfo = document.getElementById('apiInfo');
+            const apiUrlDisplay = document.getElementById('apiUrlDisplay');
+            
+            if (apiInfo && apiUrlDisplay) {
+                apiInfo.style.display = 'block';
+                apiUrlDisplay.textContent = API_BASE;
+            }
+        }
+        
+        // Обновить статус API
+        function updateApiStatus(status, message) {
+            const apiStatus = document.getElementById('apiStatus');
+            if (apiStatus) {
+                apiStatus.innerHTML = message;
+                apiStatus.style.color = status === 'success' ? '#28a745' : 
+                                      status === 'error' ? '#dc3545' : 
+                                      '#ffc107';
+            }
+        }
+        
+        // Тестирование подключения к API при запуске
+        async function testApiConnectionOnStart() {
+            try {
+                updateApiStatus('loading', '<i class="fas fa-spinner fa-spin"></i> Проверка подключения...');
+                
+                const response = await fetch(`${API_BASE}/docs`, { 
+                    method: 'HEAD',
+                    cache: 'no-cache'
+                });
+                
+                if (response.ok) {
+                    updateApiStatus('success', '<i class="fas fa-check-circle"></i> Подключено');
+                    console.log('API connection successful');
+                } else {
+                    updateApiStatus('error', `<i class="fas fa-times-circle"></i> Ошибка: ${response.status}`);
+                    console.warn('API connection test failed:', response.status);
+                }
+            } catch (error) {
+                updateApiStatus('error', `<i class="fas fa-times-circle"></i> Нет подключения`);
+                console.error('API connection error:', error);
+                
+                // Предлагаем изменить настройки API если не удалось подключиться
+                setTimeout(() => {
+                    if (!localStorage.getItem('blog_api_base')) {
+                        showAlert('Не удалось подключиться к API. Проверьте настройки подключения.', 'error');
+                        openApiConfigModal();
+                    }
+                }, 2000);
+            }
+        }
+        
+        // Тестирование подключения к API (ручное)
+        async function testApiConnection() {
+            const testUrl = document.getElementById('apiUrlInput').value || API_BASE;
+            const testResult = document.getElementById('apiTestResult');
+            
+            if (!testUrl) {
+                showAlert('Введите адрес API для проверки', 'error');
+                return;
+            }
+            
+            testResult.innerHTML = '<div class="loading" style="padding: 10px;">Проверка подключения...</div>';
+            testResult.style.display = 'block';
+            
+            try {
+                const response = await fetch(`${testUrl}/docs`, { 
+                    method: 'HEAD',
+                    cache: 'no-cache'
+                });
+                
+                if (response.ok) {
+                    testResult.innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i> 
+                            Подключение успешно! API доступен по адресу: ${testUrl}
+                        </div>
+                    `;
+                } else {
+                    testResult.innerHTML = `
+                        <div class="alert alert-error">
+                            <i class="fas fa-times-circle"></i> 
+                            Ошибка подключения: ${response.status} ${response.statusText}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                testResult.innerHTML = `
+                    <div class="alert alert-error">
+                        <i class="fas fa-times-circle"></i> 
+                        Ошибка сети: ${error.message}<br>
+                        Убедитесь что:
+                        <ul style="margin: 5px 0 0 20px;">
+                            <li>Сервер запущен</li>
+                            <li>Адрес указан правильно</li>
+                            <li>Порт открыт в фаерволе</li>
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+        
+        // Открыть модальное окно настройки API
+        function openApiConfigModal() {
+            document.getElementById('apiUrlInput').value = API_BASE;
+            document.getElementById('apiTestResult').style.display = 'none';
+            document.getElementById('apiConfigModal').classList.add('active');
+        }
+        
+        // Закрыть модальное окно настройки API
+        function closeApiConfigModal() {
+            document.getElementById('apiConfigModal').classList.remove('active');
+        }
+        
+        // Сохранить настройки API
+        function saveApiConfig() {
+            const newApiUrl = document.getElementById('apiUrlInput').value.trim();
+            
+            if (!newApiUrl) {
+                showAlert('Введите адрес API', 'error');
+                return;
+            }
+            
+            // Проверяем формат URL
+            try {
+                new URL(newApiUrl);
+            } catch (e) {
+                showAlert('Неверный формат URL. Пример: http://localhost:8000', 'error');
+                return;
+            }
+            
+            // Сохраняем новый адрес
+            localStorage.setItem('blog_api_base', newApiUrl);
+            API_BASE = newApiUrl;
+            
+            showAlert('Настройки API сохранены. Страница будет перезагружена.', 'success');
+            
+            // Перезагружаем страницу через 1.5 секунды
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        }
+        
+        // Сбросить настройки API
+        function resetApiConfig() {
+            if (confirm('Сбросить настройки API к значениям по умолчанию?')) {
+                localStorage.removeItem('blog_api_base');
+                showAlert('Настройки сброшены. Страница будет перезагружена.', 'success');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            }
+        }
+        
+        // ==================== ОСНОВНЫЕ ФУНКЦИИ ПРИЛОЖЕНИЯ ====================
+        
+        // Проверка авторизации
+        function checkAuth() {
+            if (currentUser.token) {
+                showAuthenticatedUI();
+            } else {
+                showUnauthenticatedUI();
+            }
+        }
+
+        // Показать UI для авторизованного пользователя
+        function showAuthenticatedUI() {
+            document.getElementById('authButtons').classList.add('hidden');
+            document.getElementById('userProfile').classList.remove('hidden');
+            document.getElementById('currentUsername').textContent = currentUser.username;
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('searchBox').classList.remove('hidden');
+            document.getElementById('createTab').classList.remove('hidden');
+            document.getElementById('usersTab').classList.remove('hidden');
+            document.getElementById('profileTab').classList.remove('hidden');
+            
+            // Скрываем формы авторизации в контенте
+            document.getElementById('loginContent').classList.remove('active');
+            document.getElementById('registerContent').classList.remove('active');
+            
+            // Показываем посты по умолчанию
+            showTab('posts');
+        }
+
+        // Показать UI для неавторизованного пользователя
+        function showUnauthenticatedUI() {
+            document.getElementById('authButtons').classList.remove('hidden');
+            document.getElementById('userProfile').classList.add('hidden');
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('searchBox').classList.add('hidden');
+            document.getElementById('createTab').classList.add('hidden');
+            document.getElementById('usersTab').classList.add('hidden');
+            document.getElementById('profileTab').classList.add('hidden');
+            
+            // Показываем авторизацию в основном контенте
+            showTab('login');
+        }
+
+        // Переключение вкладок
+        function showTab(tabName) {
+            // Скрыть все табы контента
+            document.querySelectorAll('.content-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Сбросить активные кнопки в сайдбаре
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Скрыть формы авторизации в сайдбаре
+            document.getElementById('loginTabContent').style.display = 'none';
+            document.getElementById('registerTabContent').style.display = 'none';
+
+            // Показать выбранный таб
+            switch(tabName) {
+                case 'login':
+                    if (!currentUser.token) {
+                        document.getElementById('loginContent').classList.add('active');
+                        document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+                    } else {
+                        showTab('posts');
+                    }
+                    break;
+                    
+                case 'register':
+                    if (!currentUser.token) {
+                        document.getElementById('registerContent').classList.add('active');
+                        document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+                    } else {
+                        showTab('posts');
+                    }
+                    break;
+                    
+                case 'posts':
+                    document.getElementById('postsContent').classList.add('active');
+                    document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+                    loadPosts();
+                    break;
+                    
+                case 'create':
+                    if (currentUser.token) {
+                        document.getElementById('createContent').classList.add('active');
+                        document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+                    } else {
+                        showAlert('Для создания поста нужно войти', 'error');
+                        showTab('login');
+                    }
+                    break;
+                    
+                case 'users':
+                    if (currentUser.token) {
+                        document.getElementById('usersContent').classList.add('active');
+                        document.querySelector('.tab-btn:nth-child(3)').classList.add('active');
+                        loadAllUsers();
+                    } else {
+                        showAlert('Для просмотра пользователей нужно войти', 'error');
+                        showTab('login');
+                    }
+                    break;
+                    
+                case 'profile':
+                    if (currentUser.token) {
+                        document.getElementById('profileContent').classList.add('active');
+                        document.querySelector('.tab-btn:nth-child(4)').classList.add('active');
+                        loadUserProfile();
+                    } else {
+                        showAlert('Для просмотра профиля нужно войти', 'error');
+                        showTab('login');
+                    }
+                    break;
+            }
+        }
+
+        // Показать профиль пользователя по ID
+        async function showUserProfile(userId) {
+            console.log('showUserProfile called with userId:', userId, 'type:', typeof userId);
+            
+            // Проверка на корректный userId
+            if (!userId || userId === 'undefined' || userId === 'null' || userId === undefined) {
+                console.error('Invalid userId:', userId);
+                showAlert('Не удалось получить ID пользователя', 'error');
+                return;
+            }
+            
+            // Преобразуем userId в число (если нужно)
+            const numericUserId = parseInt(userId);
+            if (isNaN(numericUserId)) {
+                console.error('userId is not a number:', userId);
+                showAlert('Неверный ID пользователя', 'error');
+                return;
+            }
+            
+            // Скрыть все табы контента
+            document.querySelectorAll('.content-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Показать вкладку профиля пользователя
+            document.getElementById('userProfileContent').classList.add('active');
+            
+            // Показываем загрузку
+            document.getElementById('userProfileDetails').innerHTML = '<div class="loading">Загрузка профиля...</div>';
+            
+            try {
+                console.log('Fetching user profile for ID:', numericUserId);
+                const response = await fetch(`${API_BASE}/users/${numericUserId}`);
+                
+                if (response.ok) {
+                    const user = await response.json();
+                    console.log('User data received:', user);
+                    
+                    let userDetailsHTML = `
+                        <div class="profile-info">
+                            <p><strong>Имя пользователя:</strong> ${user.username || 'Неизвестно'}</p>
+                            <p><strong>Дата регистрации:</strong> ${user.created_at ? new Date(user.created_at).toLocaleDateString('ru-RU') : 'Неизвестно'}</p>`;
+                    
+                    if (user.description) {
+                        userDetailsHTML += `<p><strong>Описание:</strong> ${user.description}</p>`;
+                    }
+                    
+                    if (user.date_of_birth) {
+                        userDetailsHTML += `<p><strong>Дата рождения:</strong> ${new Date(user.date_of_birth).toLocaleDateString('ru-RU')}</p>`;
+                    }
+                    
+                    // Обработка постов пользователя
+                    if (user.posts && Array.isArray(user.posts) && user.posts.length > 0) {
+                        userDetailsHTML += `
+                            <p><strong>Количество постов:</strong> ${user.posts.length}</p>
+                            <div style="margin-top: 20px;">
+                                <h3>Посты пользователя:</h3>`;
+                        
+                        user.posts.forEach(post => {
+                            userDetailsHTML += `
+                                <div class="post" style="margin-bottom: 10px; padding: 10px; cursor: pointer;" onclick="showPost(${post.id})">
+                                    <div class="post-title">${post.title || 'Без названия'}</div>
+                                    <div class="post-content">${post.content ? (post.content.substring(0, 100) + (post.content.length > 100 ? '...' : '')) : 'Нет содержания'}</div>
+                                    <div class="post-date">${post.created_at ? new Date(post.created_at).toLocaleDateString('ru-RU') : 'Дата неизвестна'}</div>
+                                </div>
+                            `;
+                        });
+                        
+                        userDetailsHTML += `</div>`;
+                    } else {
+                        userDetailsHTML += '<p>У пользователя пока нет постов</p>';
+                    }
+                    
+                    userDetailsHTML += `</div>`;
+                    
+                    document.getElementById('userProfileDetails').innerHTML = userDetailsHTML;
+                } else {
+                    const errorText = await response.text();
+                    console.error('API Error:', response.status, errorText);
+                    document.getElementById('userProfileDetails').innerHTML = `
+                        <div class="alert alert-error">
+                            Ошибка загрузки профиля (${response.status})
+                            ${response.status === 404 ? ' - Пользователь не найден' : ''}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Network Error:', error);
+                document.getElementById('userProfileDetails').innerHTML = `
+                    <div class="alert alert-error">
+                        Ошибка соединения: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Функция для показа поста
+        async function showPost(postId) {
+            showAlert(`Просмотр поста #${postId}`, 'info');
+        }
+
+        // Показать сообщение
+        function showAlert(message, type = 'success') {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                ${message}
+                <button onclick="this.parentElement.remove()" style="float:right; background:none; border:none; cursor:pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                if (alert.parentElement) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        // Вход (из сайдбара)
+        async function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!username || !password) {
+                showAlert('Заполните все поля', 'error');
+                return;
+            }
+
+            try {
+                const formData = new URLSearchParams();
+                formData.append('username', username);
+                formData.append('password', password);
+
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    currentUser.token = data.access_token;
+                    currentUser.username = username;
+                    
+                    // Получаем ID пользователя из токена
+                    const payload = parseJwt(data.access_token);
+                    if (payload && payload.sub) {
+                        currentUser.id = payload.sub.toString();
+                        currentUser.role = payload.role || 'user';
+                        localStorage.setItem(USERID_KEY, currentUser.id);
+                    }
+                    
+                    localStorage.setItem(TOKEN_KEY, data.access_token);
+                    localStorage.setItem(USERNAME_KEY, username);
+                    
+                    showAlert('Вход выполнен успешно!', 'success');
+                    checkAuth();
+                    loadPosts();
+                    
+                    // Очистка полей
+                    document.getElementById('loginUsername').value = '';
+                    document.getElementById('loginPassword').value = '';
+                } else {
+                    showAlert('Ошибка входа. Проверьте данные.', 'error');
+                }
+            } catch (error) {
+                showAlert('Ошибка соединения', 'error');
+            }
+        }
+
+        // Регистрация (из сайдбара)
+        async function register() {
+            const username = document.getElementById('registerUsername').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirm = document.getElementById('registerConfirm').value;
+
+            if (!username || !password || !confirm) {
+                showAlert('Заполните все поля', 'error');
+                return;
+            }
+
+            if (password !== confirm) {
+                showAlert('Пароли не совпадают', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (response.ok) {
+                    showAlert('Регистрация успешна! Теперь войдите.', 'success');
+                    
+                    // После регистрации автоматически логинимся
+                    document.getElementById('loginUsername').value = username;
+                    document.getElementById('loginPassword').value = password;
+                    
+                    await login();
+                    
+                    // Очистка полей регистрации
+                    document.getElementById('registerUsername').value = '';
+                    document.getElementById('registerPassword').value = '';
+                    document.getElementById('registerConfirm').value = '';
+                } else {
+                    const error = await response.json();
+                    showAlert(error.detail || 'Ошибка регистрации', 'error');
+                }
+            } catch (error) {
+                showAlert('Ошибка соединения', 'error');
+            }
+        }
+
+        // Вход (из контента)
+        async function contentLogin() {
+            const username = document.getElementById('contentLoginUsername').value;
+            const password = document.getElementById('contentLoginPassword').value;
+
+            if (!username || !password) {
+                showAlert('Заполните все поля', 'error');
+                return;
+            }
+
+            // Заполняем поля в сайдбаре для синхронизации
+            document.getElementById('loginUsername').value = username;
+            document.getElementById('loginPassword').value = password;
+            
+            await login();
+        }
+
+        // Регистрация (из контента)
+        async function contentRegister() {
+            const username = document.getElementById('contentRegisterUsername').value;
+            const password = document.getElementById('contentRegisterPassword').value;
+            const confirm = document.getElementById('contentRegisterConfirm').value;
+
+            if (!username || !password || !confirm) {
+                showAlert('Заполните все поля', 'error');
+                return;
+            }
+
+            if (password !== confirm) {
+                showAlert('Пароли не совпадают', 'error');
+                return;
+            }
+
+            // Заполняем поля в сайдбаре для синхронизации
+            document.getElementById('registerUsername').value = username;
+            document.getElementById('registerPassword').value = password;
+            document.getElementById('registerConfirm').value = confirm;
+            
+            await register();
+        }
+
+        // Выход
+        function logout() {
+            currentUser = { token: '', username: '', id: null, role: null };
+            localStorage.removeItem(TOKEN_KEY);
+            localStorage.removeItem(USERNAME_KEY);
+            localStorage.removeItem(USERID_KEY);
+            showAlert('Вы вышли из системы', 'success');
+            checkAuth();
+            showTab('posts');
+        }
+
+        // Загрузка постов
+        async function loadPosts() {
+            const postsList = document.getElementById('postsList');
+            postsList.innerHTML = '<div class="loading">Загрузка постов...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/posts/get-all?limit=50`);
+                if (response.ok) {
+                    const posts = await response.json();
+                    displayPosts(posts.reverse());
+                    document.getElementById('postsCount').textContent = `${posts.length} постов`;
+                } else {
+                    postsList.innerHTML = '<div class="alert alert-error">Ошибка загрузки постов</div>';
+                }
+            } catch (error) {
+                postsList.innerHTML = '<div class="alert alert-error">Ошибка соединения</div>';
+            }
+        }
+
+        // Функция для получения информации об авторе
+        function getAuthorInfo(post) {
+            console.log('getAuthorInfo post:', post);
+            
+            let authorName = 'Автор неизвестен';
+            let authorId = null;
+            
+            // Ваш API возвращает автора в поле author как объект User
+            if (post.author && typeof post.author === 'object') {
+                if (post.author.username) {
+                    authorName = post.author.username;
+                }
+                authorId = post.author.id || post.author_id;
+                console.log('Author from post.author:', {authorName, authorId});
+            } 
+            // Альтернативный вариант
+            else if (post.author_id) {
+                authorName = `Пользователь #${post.author_id}`;
+                authorId = post.author_id;
+                console.log('Author from post.author_id:', {authorName, authorId});
+            }
+            // Проверяем напрямую
+            else if (post.author) {
+                console.log('post.author exists but not object:', post.author);
+            }
+            
+            return { authorName, authorId };
+        }
+
+        // Функция для получения первого комментария
+        async function getFirstComment(postId) {
+            try {
+                const response = await fetch(`${API_BASE}/posts/${postId}/comments/?limit=1`);
+                if (response.ok) {
+                    const comments = await response.json();
+                    return comments.length > 0 ? comments[0] : null;
+                }
+            } catch (error) {
+                console.error('Error loading first comment:', error);
+            }
+            return null;
+        }
+
+        // Отображение постов
+        async function displayPosts(posts) {
+            const postsList = document.getElementById('postsList');
+            
+            if (posts.length === 0) {
+                postsList.innerHTML = '<div class="alert">Постов пока нет. Будьте первым!</div>';
+                return;
+            }
+
+            // Сначала отображаем посты без комментариев
+            postsList.innerHTML = posts.map(post => {
+                const { authorName, authorId } = getAuthorInfo(post);
+                
+                // Проверяем, является ли текущий пользователь автором поста
+                const isAuthor = currentUser.id && post.author_id && currentUser.id == post.author_id;
+                
+                return `
+                <div class="post" data-post-id="${post.id}" id="post-${post.id}">
+                    ${isAuthor ? `
+                        <div class="post-admin-actions">
+                            <button class="btn btn-warning btn-sm" onclick="openEditPostModal(${post.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="deletePost(${post.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    ` : ''}
+                    <div class="post-header">
+                        <div class="post-title">${post.title}</div>
+                        <div class="post-author" ${authorId ? `onclick="showUserProfile(${authorId})" style="cursor:pointer;"` : ''}>
+                            ${authorName}
+                        </div>
+                    </div>
+                    <div class="post-content">${post.content}</div>
+                    <div id="previewComment${post.id}"></div>
+                    <div class="post-footer">
+                        <div class="post-date">
+                            ${new Date(post.created_at).toLocaleDateString('ru-RU')} 
+                            ${new Date(post.created_at).toLocaleTimeString('ru-RU')}
+                        </div>
+                        <div class="post-actions">
+                            <button class="like-btn" onclick="toggleLike(${post.id})" id="likeBtn${post.id}">
+                                <i class="far fa-heart"></i>
+                                <span id="likeCount${post.id}">0</span>
+                            </button>
+                            <button class="comment-btn" onclick="toggleComments(${post.id})">
+                                <i class="far fa-comment"></i>
+                                <span class="comment-count" id="commentCount${post.id}">0</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="comments-section" id="comments${post.id}" style="display: none;">
+                        <div class="form-group">
+                            <textarea id="commentInput${post.id}" placeholder="Оставьте комментарий..." rows="2"></textarea>
+                            <button class="btn btn-success" onclick="addComment(${post.id})" style="margin-top: 10px;">
+                                <i class="fas fa-paper-plane"></i> Отправить
+                            </button>
+                        </div>
+                        <div id="commentList${post.id}"></div>
+                    </div>
+                </div>
+            `;
+            }).join('');
+
+            // Затем загружаем лайки, комментарии и первый комментарий для каждого поста
+            for (const post of posts) {
+                await loadLikes(post.id);
+                await loadComments(post.id);
+                await loadFirstCommentPreview(post.id);
+            }
+        }
+
+        // Загрузка первого комментария для предпросмотра
+        async function loadFirstCommentPreview(postId) {
+            try {
+                const firstComment = await getFirstComment(postId);
+                const previewDiv = document.getElementById(`previewComment${postId}`);
+                
+                if (firstComment) {
+                    const { authorName } = getCommentAuthorInfo(firstComment);
+                    previewDiv.innerHTML = `
+                        <div class="post-preview-comment">
+                            <div class="post-preview-comment-author">${authorName}:</div>
+                            <div class="post-preview-comment-text">${firstComment.text}</div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading preview comment:', error);
+            }
+        }
+
+        // Поиск постов
+        function searchPosts() {
+            const searchTerm = document.getElementById('searchPosts').value.toLowerCase();
+            const posts = document.querySelectorAll('.post');
+            
+            posts.forEach(post => {
+                const title = post.querySelector('.post-title').textContent.toLowerCase();
+                const content = post.querySelector('.post-content').textContent.toLowerCase();
+                const author = post.querySelector('.post-author').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || content.includes(searchTerm) || author.includes(searchTerm)) {
+                    post.style.display = 'block';
+                } else {
+                    post.style.display = 'none';
+                }
+            });
+        }
+
+        // Создание поста
+        async function createPost() {
+            const title = document.getElementById('postTitle').value;
+            const content = document.getElementById('postContent').value;
+
+            if (!title || !content) {
+                showAlert('Заполните все поля', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/posts/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentUser.token}`
+                    },
+                    body: JSON.stringify({ title, content })
+                });
+
+                if (response.ok) {
+                    showAlert('Пост успешно создан!', 'success');
+                    document.getElementById('postTitle').value = '';
+                    document.getElementById('postContent').value = '';
+                    loadPosts();
+                    showTab('posts');
+                } else {
+                    showAlert('Ошибка создания поста', 'error');
+                }
+            } catch (error) {
+                showAlert('Ошибка соединения', 'error');
+            }
+        }
+
+        // Открытие модального окна для редактирования поста
+        async function openEditPostModal(postId) {
+            currentEditPostId = postId;
+            
+            try {
+                // Загружаем данные поста
+                const response = await fetch(`${API_BASE}/posts/${postId}`);
+                if (response.ok) {
+                    const post = await response.json();
+                    document.getElementById('editPostTitle').value = post.title;
+                    document.getElementById('editPostContent').value = post.content;
+                    document.getElementById('editPostModal').classList.add('active');
+                } else {
+                    showAlert('Ошибка загрузки поста', 'error');
+                }
+            } catch (error) {
+                showAlert('Ошибка соединения', 'error');
+            }
+        }
+
+        // Закрытие модального окна редактирования поста
+        function closeEditPostModal() {
+            document.getElementById('editPostModal').classList.remove('active');
+            currentEditPostId = null;
+        }
+
+        // Обновление поста
+        async function updatePost() {
+            if (!currentEditPostId) return;
+            
+            const title = document.getElementById('editPostTitle').value;
+            const content = document.getElementById('editPostContent').value;
+
+            if (!title || !content) {
+                showAlert('Заполните все поля', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/posts/update/${currentEditPostId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentUser.token}`
+                    },
+                    body: JSON.stringify({ title, content })
+                });
+
+                if (response.ok) {
+                    showAlert('Пост успешно обновлен!', 'success');
+                    closeEditPostModal();
+                    loadPosts();
+                } else {
+                    const error = await response.json();
+                    showAlert(error.detail || 'Ошибка обновления поста', 'error');
+                }
+            } catch (error) {
+                showAlert('Ошибка соединения', 'error');
+            }
+        }
+
+        // Удаление поста
+        async function deletePost(postId) {
+            if (!confirm('Вы уверены, что хотите удалить этот пост?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/posts/delete/${postId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${currentUser.token}`
+                    }
+                });
+
+                if (response.ok) {
+                    showAlert('Пост успешно удален!', 'success');
+                    loadPosts();
+                } else {
+                    const error = await response.json();
+                    showAlert(error.detail || 'Ошибка удаления поста', 'error');
+                }
+            } catch (error) {
+                showAlert('Ошибка соединения', 'error');
+            }
+        }
+
+        // Лайки
+        async function loadLikes(postId) {
+            try {
+                const response = await fetch(`${API_BASE}/posts/${postId}/like/counts`);
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById(`likeCount${postId}`).textContent = data.count;
+                    
+                    // Проверяем, лайкнул ли пользователь
+                    if (currentUser.token) {
+                        const checkResponse = await fetch(`${API_BASE}/posts/${postId}/like/check`, {
+                            headers: {
+                                'Authorization': `Bearer ${currentUser.token}`
+                            }
+                        });
+                        
+                        if (checkResponse.ok) {
+                            const checkData = await checkResponse.json();
+                            const likeBtn = document.getElementById(`likeBtn${postId}`);
+                            if (checkData.liked) {
+                                likeBtn.innerHTML = `<i class="fas fa-heart"></i> <span id="likeCount${postId}">${data.count}</span>`;
+                            } else {
+                                likeBtn.innerHTML = `<i class="far fa-heart"></i> <span id="likeCount${postId}">${data.count}</span>`;
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading likes:', error);
+            }
+        }
+
+        async function toggleLike(postId) {
+            if (!currentUser.token) {
+                showAlert('Для этого нужно войти', 'error');
+                return;
+            }
+
+            const likeBtn = document.getElementById(`likeBtn${postId}`);
+            
+            try {
+                // Проверяем, лайкнул ли уже пользователь
+                const checkResponse = await fetch(`${API_BASE}/posts/${postId}/like/check`, {
+                    headers: {
+                        'Authorization': `Bearer ${currentUser.token}`
+                    }
+                });
+
+                if (checkResponse.ok) {
+                    const checkData = await checkResponse.json();
+                    
+                    if (checkData.liked) {
+                        // Удаляем лайк
+                        await fetch(`${API_BASE}/posts/${postId}/like`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Authorization': `Bearer ${currentUser.token}`
+                            }
+                        });
+                        // Обновляем счетчик
+                        const currentCount = parseInt(document.getElementById(`likeCount${postId}`).textContent);
+                        document.getElementById(`likeCount${postId}`).textContent = Math.max(0, currentCount - 1);
+                        likeBtn.innerHTML = `<i class="far fa-heart"></i> <span id="likeCount${postId}">${Math.max(0, currentCount - 1)}</span>`;
+                    } else {
+                        // Добавляем лайк
+                        await fetch(`${API_BASE}/posts/${postId}/like`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${currentUser.token}`
+                            }
+                        });
+                        // Обновляем счетчик
+                        const currentCount = parseInt(document.getElementById(`likeCount${postId}`).textContent);
+                        document.getElementById(`likeCount${postId}`).textContent = currentCount + 1;
+                        likeBtn.innerHTML = `<i class="fas fa-heart"></i> <span id="likeCount${postId}">${currentCount + 1}</span>`;
+                    }
+                }
+            } catch (error) {
+                console.error('Error toggling like:', error);
+                showAlert('Ошибка при лайке', 'error');
+            }
+        }
+
+        // Функция для получения информации об авторе комментария
+        function getCommentAuthorInfo(comment) {
+            let authorName = 'Аноним';
+            let authorId = null;
+            
+            if (comment.author && typeof comment.author === 'object') {
+                if (comment.author.username) {
+                    authorName = comment.author.username;
+                }
+                authorId = comment.author.id || comment.author_id;
+            } else if (comment.author_id) {
+                authorName = `Пользователь #${comment.author_id}`;
+                authorId = comment.author_id;
+            }
+            
+            return { authorName, authorId };
+        }
+
+        // Комментарии
+        async function loadComments(postId) {
+            try {
+                const response = await fetch(`${API_BASE}/posts/${postId}/comments/?limit=20`);
+                if (response.ok) {
+                    const comments = await response.json();
+                    const commentList = document.getElementById(`commentList${postId}`);
+                    
+                    // Обновляем счетчик комментариев
+                    document.getElementById(`commentCount${postId}`).textContent = comments.length;
+                    
+                    if (comments.length === 0) {
+                        commentList.innerHTML = '<div style="color:#666; text-align:center;">Комментариев пока нет</div>';
+                    } else {
+                        commentList.innerHTML = comments.map(comment => {
+                            const { authorName, authorId } = getCommentAuthorInfo(comment);
+                            
+                            // Проверяем, является ли текущий пользователь автором комментария
+                            const isAuthor = currentUser.id && comment.author_id && currentUser.id == comment.author_id;
+                            
+                            return `
+                                <div class="comment">
+                                    ${isAuthor ? `
+                                        <div class="comment-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openEditCommentModal(${postId}, ${comment.id}, '${comment.text.replace(/'/g, "\\'")}')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteComment(${postId}, ${comment.id})">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    ` : ''}
+                                    <div class="comment-author" ${authorId ? `onclick="showUserProfile(${authorId})" style="cursor:pointer;"` : ''}>
+                                        ${authorName}
+                                    </div>
+                                    <div class="comment-text">${comment.text}</div>
+                                    <div class="comment-date">${new Date(comment.created_at).toLocaleString('ru-RU')}</div>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading comments:', error);
+            }
+        }
+
+        function toggleComments(postId) {
+            const commentsSection = document.getElementById(`comments${postId}`);
+            const isVisible = commentsSection.style.display === 'block';
+            commentsSection.style.display = isVisible ? 'none' : 'block';
+            
+            // Если открываем секцию комментариев, загружаем их
+            if (!isVisible) {
+                loadComments(postId);
+            }
+        }
+
+        async function addComment(postId) {
+            if (!currentUser.token) {
+                showAlert('Для комментария нужно войти', 'error');
+                return;
+            }
+
+            const commentInput = document.getElementById(`commentInput${postId}`);
+            const text = commentInput.value.trim();
+
+            if (!text) {
+                showAlert('Введите текст комментария', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/posts/${postId}/comments/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentUser.token}`
+                    },
+                    body: JSON.stringify({ text })
+                });
+
+                if (response.ok) {
+                    const newComment = await response.json();
+                    commentInput.value = '';
+                    
+                    // После добавления комментария, добавляем его сразу в список
+                    const commentList = document.getElementById(`commentList${postId}`);
+                    
+                    // Если это первое сообщение, очищаем placeholder
+                    if (commentList.innerHTML.includes('Комментариев пока нет')) {
+                        commentList.innerHTML = '';
+                    }
+                    
+                    // Добавляем новый комментарий в начало
+                    const commentElement = document.createElement('div');
+                    commentElement.className = 'comment';
+                    commentElement.innerHTML = `
+                        <div class="comment-actions">
+                            <button class="btn btn-warning btn-sm" onclick="openEditCommentModal(${postId}, ${newComment.id}, '${text.replace(/'/g, "\\'")}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteComment(${postId}, ${newComment.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="comment-author">${currentUser.username}</div>
+                        <div class="comment-text">${text}</div>
+                        <div class="comment-date">${new Date().toLocaleString('ru-RU')}</div>
+                    `;
+                    commentList.prepend(commentElement);
+                    
+                    // Обновляем счетчик комментариев
+                    const currentCount = parseInt(document.getElementById(`commentCount${postId}`).textContent);
+                    document.getElementById(`commentCount${postId}`).textContent = currentCount + 1;
+                    
+                    // Обновляем предпросмотр первого комментария
+                    await loadFirstCommentPreview(postId);
+                    
+                    showAlert('Комментарий добавлен', 'success');
+                    
+                    // Также перезагружаем комментарии для обновления всех данных
+                    loadComments(postId);
+                } else {
+                    showAlert('Ошибка добавления комментария', 'error');
+                }
+            } catch (error) {
+                showAlert('Ошибка соединения', 'error');
+            }
+        }
+
+        // Открытие модального окна для редактирования комментария
+        function openEditCommentModal(postId, commentId, commentText) {
+            currentEditCommentId = commentId;
+            currentPostIdForComment = postId; // Устанавливаем ID поста
+            document.getElementById('editCommentText').value = commentText;
+            document.getElementById('editCommentModal').classList.add('active');
+        }
+
+        // Закрытие модального окна редактирования комментария
+        function closeEditCommentModal() {
+            document.getElementById('editCommentModal').classList.remove('active');
+            currentEditCommentId = null;
+            currentPostIdForComment = null;
+        }
+
+        // Обновление комментария
+        async function updateComment() {
+            if (!currentEditCommentId || !currentPostIdForComment) {
+                showAlert('Ошибка: не указан пост или комментарий', 'error');
+                return;
+            }
+            
+            const text = document.getElementById('editCommentText').value.trim();
+
+            if (!text) {
+                showAlert('Введите текст комментария', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/posts/${currentPostIdForComment}/comments/${currentEditCommentId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentUser.token}`
+                    },
+                    body: JSON.stringify({ text })
+                });
+
+                if (response.ok) {
+                    showAlert('Комментарий успешно обновлен!', 'success');
+                    closeEditCommentModal();
+                    loadComments(currentPostIdForComment);
+                    await loadFirstCommentPreview(currentPostIdForComment);
+                } else {
+                    const error = await response.json();
+                    showAlert(error.detail || 'Ошибка обновления комментария', 'error');
+                }
+            } catch (error) {
+                showAlert('Ошибка соединения', 'error');
+            }
+        }
+
+        // Удаление комментария
+        async function deleteComment(postId, commentId) {
+            if (!confirm('Вы уверены, что хотите удалить этот комментарий?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/posts/${postId}/comments/${commentId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${currentUser.token}`
+                    }
+                });
+
+                if (response.ok) {
+                    showAlert('Комментарий успешно удален!', 'success');
+                    loadComments(postId);
+                    await loadFirstCommentPreview(postId);
+                } else {
+                    const error = await response.json();
+                    showAlert(error.detail || 'Ошибка удаления комментария', 'error');
+                }
+            } catch (error) {
+                showAlert('Ошибка соединения', 'error');
+            }
+        }
+
+        // Загрузка всех пользователей (используем username)
+        async function loadAllUsers() {
+            const usersList = document.getElementById('usersList');
+            usersList.innerHTML = '<div class="loading">Загрузка пользователей...</div>';
+
+            console.log('Loading all users from API...');
+
+            try {
+                const response = await fetch(`${API_BASE}/users/get_all`);
+                
+                if (response.ok) {
+                    const users = await response.json();
+                    console.log('Users received from API:', users);
+                    
+                    if (users.length === 0) {
+                        usersList.innerHTML = '<div class="alert">Пользователей пока нет</div>';
+                        return;
+                    }
+
+                    // Так как у пользователей нет id, просто показываем информацию
+                    usersList.innerHTML = users.map(user => {
+                        const username = user.username || 'Без имени';
+                        const description = user.description || '';
+                        const postsCount = user.posts && Array.isArray(user.posts) ? user.posts.length : 0;
+                        const createdDate = user.created_at ? new Date(user.created_at).toLocaleDateString('ru-RU') : 'Дата неизвестна';
+                        const birthDate = user.date_of_birth ? new Date(user.date_of_birth).toLocaleDateString('ru-RU') : 'Не указана';
+                        
+                        return `
+                            <div class="user-card">
+                                <div class="user-card-header">
+                                    <div class="user-card-name">
+                                        <i class="fas fa-user"></i> ${username}
+                                    </div>
+                                    <div class="user-card-date">
+                                        ${createdDate}
+                                    </div>
+                                </div>
+                                ${description ? `<p>${description}</p>` : ''}
+                                <p><strong>Имя пользователя:</strong> ${username}</p>
+                                <p><strong>Дата рождения:</strong> ${birthDate}</p>
+                                <p><small>Постов: ${postsCount}</small></p>
+                            </div>
+                        `;
+                    }).join('');
+                    
+                } else {
+                    const errorText = await response.text();
+                    console.error('API Error:', response.status, errorText);
+                    usersList.innerHTML = `
+                        <div class="alert alert-error">
+                            Ошибка загрузки пользователей (${response.status})
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+                usersList.innerHTML = '<div class="alert alert-error">Ошибка соединения</div>';
+            }
+        }
+
+        // Профиль текущего пользователя
+        async function loadUserProfile() {
+            try {
+                const response = await fetch(`${API_BASE}/users/profile`, {
+                    headers: {
+                        'Authorization': `Bearer ${currentUser.token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const profile = await response.json();
+                    
+                    document.getElementById('profileUsername').textContent = profile.username;
+                    document.getElementById('profileCreated').textContent = new Date(profile.created_at).toLocaleDateString('ru-RU');
+                    
+                    if (profile.description) {
+                        document.getElementById('profileDescription').textContent = profile.description;
+                        document.getElementById('profileDescriptionInput').value = profile.description;
+                    } else {
+                        document.getElementById('profileDescription').textContent = 'Не указано';
+                        document.getElementById('profileDescriptionInput').value = '';
+                    }
+                    
+                    if (profile.date_of_birth) {
+                        const birthDate = new Date(profile.date_of_birth);
+                        document.getElementById('profileBirthDate').value = birthDate.toISOString().split('T')[0];
+                        document.getElementById('profileBirthDateDisplay').textContent = birthDate.toLocaleDateString('ru-RU');
+                    } else {
+                        document.getElementById('profileBirthDate').value = '';
+                        document.getElementById('profileBirthDateDisplay').textContent = 'Не указана';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+        }
+
+        async function updateProfile() {
+            const description = document.getElementById('profileDescriptionInput').value;
+            const date_of_birth = document.getElementById('profileBirthDate').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/users/profile/update`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentUser.token}`
+                    },
+                    body: JSON.stringify({ 
+                        description: description || null,
+                        date_of_birth: date_of_birth || null
+                    })
+                });
+
+                if (response.ok) {
+                    showAlert('Профиль обновлен', 'success');
+                    loadUserProfile();
+                } else {
+                    showAlert('Ошибка обновления профиля', 'error');
+                }
+            } catch (error) {
+                showAlert('Ошибка соединения', 'error');
+            }
+        }
+
+        async function deleteProfile() {
+            if (!confirm('Вы уверены, что хотите удалить аккаунт? Это действие нельзя отменить.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/users/profile/delete`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${currentUser.token}`
+                    }
+                });
+
+                if (response.ok) {
+                    showAlert('Аккаунт удален', 'success');
+                    logout();
+                } else {
+                    showAlert('Ошибка удаления аккаунта', 'error');
+                }
+            } catch (error) {
+                showAlert('Ошибка соединения', 'error');
+            }
+        }
+    </script>
+</body>
+</html>
