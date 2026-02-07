@@ -217,5 +217,5 @@ Uvicorn - ASGI сервер
 
 👤 **Автор**
 ```
-GitHub: [@OneSummon](https://github.com/OneSummon)
+GitHub: https://github.com/OneSummon
 ```
