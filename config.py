@@ -1,5 +1,5 @@
-DB_URL = "sqlite+aiosqlite:///database.db"
+DB_URL = "your-db-url"
 
-SECRET_KEY = "day31may2007year18yearsold"
+SECRET_KEY = "your-secret-key"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
